@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "369566513512",
+    "project_id": "lamyani-36f4c",
+    "storage_bucket": "lamyani-36f4c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369566513512:android:84278384e935f40c7dfedd",
+        "android_client_info": {
+          "package_name": "com.example.lamyani"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7hcLDNTN2G3tk3-_DQHSlx2BqUCTIDYw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
