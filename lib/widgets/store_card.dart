@@ -27,22 +27,122 @@ class StoreCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.peachSurface.withValues(alpha: 0.9)),
         boxShadow: AppTheme.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            child: AppImage(
-              source: store.imageUrl,
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                child: SizedBox(
+                  height: 176,
+                  width: double.infinity,
+                  child: AppImage(
+                    source: store.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.darkText.withValues(alpha: 0.02),
+                        AppColors.darkText.withValues(alpha: 0.28),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.94),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    distanceLabel,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.darkText,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: store.isOpen
+                        ? const Color(0xEAF2F9EE)
+                        : const Color(0xFFFCEAE6),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    store.statusLabel,
+                    style: TextStyle(
+                      color: store.isOpen ? AppColors.success : AppColors.danger,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 14,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        store.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.white,
+                        ),
+                      ),
+                    ),
+                    if (onMapTap != null)
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.white.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: IconButton(
+                          onPressed: onMapTap,
+                          icon: const Icon(
+                            Icons.map_outlined,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
           Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final narrow = constraints.maxWidth < 340;
@@ -50,40 +150,6 @@ class StoreCard extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            store.name,
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: store.isOpen
-                                ? const Color(0x142E8B57)
-                                : const Color(0x14C44D34),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            store.statusLabel,
-                            style: TextStyle(
-                              color: store.isOpen
-                                  ? AppColors.success
-                                  : AppColors.danger,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
@@ -103,7 +169,7 @@ class StoreCard extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -124,14 +190,7 @@ class StoreCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      distanceLabel,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.brownAccent,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 14),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(14),
@@ -144,18 +203,20 @@ class StoreCard extends StatelessWidget {
                         children: [
                           Text(
                             'Store notes',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.primaryOrange,
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AppColors.primaryOrange,
+                                  fontWeight: FontWeight.w800,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Manager: ${store.manager}',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.darkText,
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.darkText,
+                                  fontWeight: FontWeight.w700,
+                                ),
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -165,39 +226,7 @@ class StoreCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (onMapTap != null) ...[
-                      const SizedBox(height: 10),
-                      InkWell(
-                        onTap: onMapTap,
-                        borderRadius: BorderRadius.circular(999),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                            vertical: 2,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.map_outlined,
-                                size: 18,
-                                color: AppColors.primaryOrange,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'View on map',
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      color: AppColors.primaryOrange,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                     if (narrow) ...[
                       PrimaryButton(
                         label: 'Directions',

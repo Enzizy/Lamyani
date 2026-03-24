@@ -354,7 +354,7 @@ class _CheckoutSheetState extends State<_CheckoutSheet> {
             Text('Checkout', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
-              'Confirm the branch handling your order before we send it to Firebase.',
+              'Review your branch, delivery timing, and payment summary before we place this order.',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.mutedText,
               ),
@@ -379,6 +379,21 @@ class _CheckoutSheetState extends State<_CheckoutSheet> {
               ),
             ),
             const SizedBox(height: 14),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: const [
+                _CheckoutMetaPill(
+                  icon: Icons.schedule_rounded,
+                  label: 'Arrival 25-35 min',
+                ),
+                _CheckoutMetaPill(
+                  icon: Icons.payments_outlined,
+                  label: 'Pay on delivery',
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             Text(
               'Choose branch',
               style: Theme.of(context).textTheme.titleMedium,
@@ -429,10 +444,27 @@ class _CheckoutSheetState extends State<_CheckoutSheet> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${_selectedStore!.region} • ${_selectedStore!.hours}',
+                      '${_selectedStore!.region} - ${_selectedStore!.hours}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _CheckoutMetaPill(
+                          icon: Icons.storefront_rounded,
+                          label: _selectedStore!.isOpen ? 'Open now' : 'Closed',
+                          compact: true,
+                        ),
+                        _CheckoutMetaPill(
+                          icon: Icons.inventory_2_outlined,
+                          label: '${_selectedStore!.productCount} menu items',
+                          compact: true,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       'Next promo: ${_selectedStore!.nextPromo}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -596,6 +628,12 @@ class _CartHero extends StatelessWidget {
                     ? 'No delivery fee'
                     : '\u20B1${cart.deliveryFee.toStringAsFixed(0)} delivery',
               ),
+              _CartMetaPill(
+                icon: Icons.restaurant_menu_rounded,
+                label: cart.isEmpty
+                    ? 'No selections'
+                    : '${cart.uniqueItems} meal choices',
+              ),
             ],
           ),
           const SizedBox(height: 18),
@@ -643,6 +681,9 @@ class _CartItemCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
         boxShadow: AppTheme.softShadow,
+        border: Border.all(
+          color: AppColors.peachSurface.withValues(alpha: 0.9),
+        ),
       ),
       child: Column(
         children: [
@@ -729,6 +770,39 @@ class _CartItemCard extends StatelessWidget {
                         color: AppColors.mutedText.withValues(alpha: 0.88),
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.cardSurface,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.bolt_rounded,
+                            size: 16,
+                            color: AppColors.primaryOrange,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Freshly prepared and routed to the nearest active branch.',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.brownAccent,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -763,6 +837,14 @@ class _CartItemCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Text(
+                      'Qty',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.mutedText,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     _CartQuantityButton(
                       icon: Icons.remove_rounded,
                       backgroundColor: entry.quantity <= 1
@@ -966,6 +1048,46 @@ class _CheckoutPanel extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
       ),
       child: child,
+    );
+  }
+}
+
+class _CheckoutMetaPill extends StatelessWidget {
+  const _CheckoutMetaPill({
+    required this.icon,
+    required this.label,
+    this.compact = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 10 : 12,
+        vertical: compact ? 7 : 9,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: AppColors.primaryOrange),
+          const SizedBox(width: 7),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.darkText,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

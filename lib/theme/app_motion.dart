@@ -18,12 +18,18 @@ class AppMotion {
 
         return FadeTransition(
           opacity: curved,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: begin,
-              end: Offset.zero,
+          child: ScaleTransition(
+            scale: Tween<double>(
+              begin: 0.985,
+              end: 1,
             ).animate(curved),
-            child: child,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: begin,
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
+            ),
           ),
         );
       },

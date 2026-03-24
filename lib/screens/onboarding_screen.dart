@@ -82,6 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final slides = MockData.onboardingSlides;
     final isLast = _page == slides.length - 1;
+    final progressLabel = '${_page + 1} of ${slides.length}';
 
     return Scaffold(
       body: SafeArea(
@@ -118,70 +119,109 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         final ultraCompact = constraints.maxHeight < 540;
                         final heroHeight = math.min(
                           ultraCompact
-                              ? 320.0
+                              ? 336.0
                               : compact
-                              ? 360.0
-                              : 420.0,
-                          constraints.maxHeight * 0.56,
+                              ? 376.0
+                              : 432.0,
+                          constraints.maxHeight * 0.58,
                         );
 
-                        return Column(
-                          children: [
-                            SizedBox(height: ultraCompact ? 8 : 14),
-                            SizedBox(
-                              height: heroHeight,
-                              child: _OnboardingHeroCard(
-                                slide: slide,
-                                compact: compact,
-                                ultraCompact: ultraCompact,
-                              ),
+                        return SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight,
                             ),
-                            SizedBox(height: ultraCompact ? 22 : 30),
-                            Text(
-                              slide.title,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineLarge
-                                  ?.copyWith(
-                                    fontSize: compact ? 27 : 31,
-                                    height: 1.08,
+                            child: Column(
+                              children: [
+                                SizedBox(height: ultraCompact ? 8 : 14),
+                                SizedBox(
+                                  height: heroHeight,
+                                  child: _OnboardingHeroCard(
+                                    slide: slide,
+                                    compact: compact,
+                                    ultraCompact: ultraCompact,
                                   ),
+                                ),
+                                SizedBox(height: ultraCompact ? 18 : 26),
+                                Text(
+                                  slide.title,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineLarge
+                                      ?.copyWith(
+                                        fontSize: compact ? 27 : 31,
+                                        height: 1.08,
+                                      ),
+                                ),
+                                SizedBox(height: compact ? 12 : 14),
+                                Text(
+                                  slide.subtitle,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        color: AppColors.mutedText,
+                                        fontSize: compact ? 14 : 15,
+                                        height: 1.45,
+                                      ),
+                                ),
+                                const SizedBox(height: 14),
+                                _OnboardingHint(
+                                  text: _slideHint(index),
+                                  compact: compact,
+                                ),
+                                SizedBox(height: ultraCompact ? 8 : 12),
+                              ],
                             ),
-                            SizedBox(height: compact ? 12 : 14),
-                            Text(
-                              slide.subtitle,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    color: AppColors.mutedText,
-                                    fontSize: compact ? 14 : 15,
-                                    height: 1.45,
-                                  ),
-                            ),
-                          ],
+                          ),
                         );
                       },
                     );
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  slides.length,
-                  (index) => AnimatedContainer(
-                    duration: const Duration(milliseconds: 220),
-                    width: _page == index ? 28 : 10,
-                    height: 10,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: _page == index
-                          ? AppColors.primaryOrange
-                          : AppColors.peachSurface,
+                      color: AppColors.cardSurface,
                       borderRadius: BorderRadius.circular(999),
                     ),
+                    child: Text(
+                      progressLabel,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.brownAccent,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                ),
+                  const Spacer(),
+                  Row(
+                    children: List.generate(
+                      slides.length,
+                      (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        width: _page == index ? 28 : 10,
+                        height: 10,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: _page == index
+                              ? AppColors.primaryOrange
+                              : AppColors.peachSurface,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               PrimaryButton(
@@ -196,6 +236,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
       ),
     );
+  }
+
+  String _slideHint(int index) {
+    switch (index) {
+      case 0:
+        return 'Cebu-roasted favorites, ready for fast ordering.';
+      case 1:
+        return 'We will ask for location permission on the next tap.';
+      case 2:
+        return 'Rewards begin as soon as your first completed order lands.';
+      case 3:
+        return 'Create your account next to unlock checkout and order history.';
+      default:
+        return '';
+    }
   }
 }
 
@@ -287,6 +342,11 @@ class _OnboardingHeroCard extends StatelessWidget {
             : dense
             ? 18.0
             : 28.0;
+        final bottomPadding = microCompact
+            ? panelPadding
+            : dense
+            ? panelPadding + 10
+            : panelPadding + 14;
         final showStats = !microCompact;
 
         return Container(
@@ -319,10 +379,14 @@ class _OnboardingHeroCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(panelPadding),
+                padding: EdgeInsets.fromLTRB(
+                  panelPadding,
+                  panelPadding,
+                  panelPadding,
+                  bottomPadding,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
@@ -396,6 +460,8 @@ class _OnboardingHeroCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                    SizedBox(height: dense ? 10 : 16),
+                    const Spacer(),
                     if (showStats)
                       Row(
                         children: [
@@ -421,6 +487,52 @@ class _OnboardingHeroCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _OnboardingHint extends StatelessWidget {
+  const _OnboardingHint({
+    required this.text,
+    required this.compact,
+  });
+
+  final String text;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 12 : 14,
+        vertical: compact ? 9 : 10,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.peachSurface.withValues(alpha: 0.92),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.auto_awesome_rounded,
+            size: 16,
+            color: AppColors.primaryOrange,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.brownAccent,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

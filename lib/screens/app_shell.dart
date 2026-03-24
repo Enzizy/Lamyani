@@ -99,34 +99,70 @@ class _AppShellState extends State<AppShell> {
             );
           }),
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _currentIndex,
-          backgroundColor: AppColors.white,
-          indicatorColor: AppColors.peachSurface,
-          animationDuration: const Duration(milliseconds: 450),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Home',
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.white.withValues(alpha: 0.96),
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(
+                  color: AppColors.peachSurface.withValues(alpha: 0.95),
+                ),
+                boxShadow: AppTheme.softShadow,
+              ),
+              child: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  backgroundColor: Colors.transparent,
+                  indicatorColor: AppColors.peachSurface,
+                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                    return TextStyle(
+                      color: states.contains(WidgetState.selected)
+                          ? AppColors.darkText
+                          : AppColors.mutedText,
+                      fontWeight: states.contains(WidgetState.selected)
+                          ? FontWeight.w800
+                          : FontWeight.w600,
+                    );
+                  }),
+                ),
+                child: NavigationBar(
+                  selectedIndex: _currentIndex,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  height: 74,
+                  indicatorShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  animationDuration: const Duration(milliseconds: 450),
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home_rounded),
+                      label: 'Home',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.restaurant_menu_outlined),
+                      selectedIcon: Icon(Icons.restaurant_menu_rounded),
+                      label: 'Menu',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.storefront_outlined),
+                      selectedIcon: Icon(Icons.storefront_rounded),
+                      label: 'Stores',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.person_outline_rounded),
+                      selectedIcon: Icon(Icons.person_rounded),
+                      label: 'Profile',
+                    ),
+                  ],
+                  onDestinationSelected: _goToTab,
+                ),
+              ),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.restaurant_menu_outlined),
-              selectedIcon: Icon(Icons.restaurant_menu_rounded),
-              label: 'Menu',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.storefront_outlined),
-              selectedIcon: Icon(Icons.storefront_rounded),
-              label: 'Stores',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
-            ),
-          ],
-          onDestinationSelected: _goToTab,
+          ),
         ),
       ),
     );

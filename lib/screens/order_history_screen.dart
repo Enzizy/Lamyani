@@ -45,11 +45,122 @@ class OrderHistoryScreen extends StatelessWidget {
                     );
                   }
 
-                  return ListView.separated(
+                  final preparingCount = orders
+                      .where((order) => order.status == 'preparing')
+                      .length;
+                  final deliveredCount = orders
+                      .where((order) => order.status == 'delivered')
+                      .length;
+                  final totalSpend = orders.fold<double>(
+                    0,
+                    (sum, order) => sum + order.total,
+                  );
+
+                  return ListView(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                    itemCount: orders.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 16),
-                    itemBuilder: (context, index) => _OrderCard(order: orders[index]),
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: AppTheme.softShadow,
+                          border: Border.all(
+                            color: AppColors.peachSurface.withValues(alpha: 0.9),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Your order activity',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Track branch fulfillment, recent purchases, and completed meals in one place.',
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(color: AppColors.mutedText),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _OrderOverviewStat(
+                                    label: 'Orders',
+                                    value: '${orders.length}',
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _OrderOverviewStat(
+                                    label: 'Preparing',
+                                    value: '$preparingCount',
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _OrderOverviewStat(
+                                    label: 'Delivered',
+                                    value: '$deliveredCount',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.cardSurface,
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.payments_outlined,
+                                    color: AppColors.primaryOrange,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Total spend',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.brownAccent,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    '\u20B1${totalSpend.toStringAsFixed(0)}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: AppColors.primaryOrange,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      ...List.generate(orders.length, (index) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: index == orders.length - 1 ? 0 : 16,
+                          ),
+                          child: _OrderCard(order: orders[index]),
+                        );
+                      }),
+                    ],
                   );
                 },
               ),
@@ -194,6 +305,9 @@ class _OrderCard extends StatelessWidget {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(26),
         boxShadow: AppTheme.softShadow,
+        border: Border.all(
+          color: AppColors.peachSurface.withValues(alpha: 0.88),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,7 +325,7 @@ class _OrderCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${order.branchName} • $placedLabel',
+                      '${order.branchName} - $placedLabel',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -371,6 +485,46 @@ class _OrderMetaPill extends StatelessWidget {
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.darkText,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OrderOverviewStat extends StatelessWidget {
+  const _OrderOverviewStat({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColors.primaryOrange,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.mutedText,
               fontWeight: FontWeight.w700,
             ),
           ),

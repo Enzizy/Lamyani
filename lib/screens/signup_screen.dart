@@ -89,14 +89,6 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _submitting = true);
 
     try {
-      final accountExists = await AuthService.hasAccountForEmail(
-        _emailController.text,
-      );
-      if (accountExists) {
-        _showMessage('That email is already registered. Log in instead.');
-        return;
-      }
-
       final challenge = await EmailJsService.sendRegistrationOtp(
         _emailController.text,
       );
@@ -202,6 +194,74 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFFFF8F2),
+                              Color(0xFFFFF1E4),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: AppColors.peachSurface.withValues(alpha: 0.9),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white,
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    'New member setup',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.primaryOrange,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                const BrandLogo(size: 34),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: const [
+                                Expanded(
+                                  child: _SignupBenefit(
+                                    icon: Icons.pin_drop_outlined,
+                                    label: 'Nearby branches',
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: _SignupBenefit(
+                                    icon: Icons.card_giftcard_rounded,
+                                    label: 'Rewards access',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 22),
                       Text(
                         'Create your Lamyani account',
                         style: Theme.of(
@@ -631,6 +691,42 @@ class _CountryCodeField extends StatelessWidget {
           ),
           const Spacer(),
           if (!compact) const Icon(Icons.keyboard_arrow_down_rounded),
+        ],
+      ),
+    );
+  }
+}
+
+class _SignupBenefit extends StatelessWidget {
+  const _SignupBenefit({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: AppColors.primaryOrange),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.brownAccent,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );

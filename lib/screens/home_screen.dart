@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -111,10 +113,25 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: const [
+                        _HeaderPill(
+                          icon: Icons.bolt_rounded,
+                          label: 'Quick pickup',
+                        ),
+                        _HeaderPill(
+                          icon: Icons.workspace_premium_outlined,
+                          label: 'Rewards ready',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         return Container(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(22),
                           decoration: BoxDecoration(
                             color: AppColors.white.withValues(alpha: 0.16),
                             borderRadius: BorderRadius.circular(28),
@@ -126,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _QuickOrderLead(onOrderNowTap: onViewMenuTap),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 18),
                               Row(
                                 children: const [
                                   Expanded(
@@ -178,9 +195,10 @@ class HomeScreen extends StatelessWidget {
                     final promos = promoSnapshot.data ?? MockData.promos;
 
                     return SizedBox(
-                      height: 180,
+                      height: 188,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(right: 20),
                         itemCount: promos.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 16),
                         itemBuilder: (context, index) {
@@ -200,6 +218,7 @@ class HomeScreen extends StatelessWidget {
                   height: 48,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(right: 20),
                     itemCount: MockData.quickCategories.length,
                     separatorBuilder: (_, _) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
@@ -225,23 +244,11 @@ class HomeScreen extends StatelessWidget {
                   onActionTap: onViewMenuTap,
                 ),
                 const SizedBox(height: 18),
-                SizedBox(
-                  height: 332,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: featuredItems.length,
-                    separatorBuilder: (_, _) => const SizedBox(width: 16),
-                    itemBuilder: (context, index) {
-                      final item = featuredItems[index];
-                      return FoodCard(
-                        item: item,
-                        onTap: () => onProductTap(item),
-                        onAddTap: () => onProductTap(item),
-                      );
-                    },
-                  ),
+                _FeaturedMenuCarousel(
+                  items: featuredItems,
+                  onProductTap: onProductTap,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 18),
                     ],
                   );
                 },
@@ -250,6 +257,103 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FeaturedMenuCarousel extends StatefulWidget {
+  const _FeaturedMenuCarousel({
+    required this.items,
+    required this.onProductTap,
+  });
+
+  final List<MenuProduct> items;
+  final ValueChanged<MenuProduct> onProductTap;
+
+  @override
+  State<_FeaturedMenuCarousel> createState() => _FeaturedMenuCarouselState();
+}
+
+class _FeaturedMenuCarouselState extends State<_FeaturedMenuCarousel> {
+  late final PageController _controller;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(viewportFraction: 0.84);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.items.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = math.min(248.0, constraints.maxWidth * 0.82);
+        final cardHeight = cardWidth + 88;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: cardHeight,
+              child: PageView.builder(
+                controller: _controller,
+                padEnds: true,
+                itemCount: widget.items.length,
+                onPageChanged: (index) {
+                  if (!mounted) return;
+                  setState(() => _currentPage = index);
+                },
+                itemBuilder: (context, index) {
+                  final item = widget.items[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: FoodCard(
+                        item: item,
+                        width: cardWidth,
+                        height: cardHeight,
+                        onTap: () => widget.onProductTap(item),
+                        onAddTap: () => widget.onProductTap(item),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(widget.items.length, (index) {
+                final isActive = index == _currentPage;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 18 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? AppColors.primaryOrange
+                        : AppColors.peachSurface,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                );
+              }),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -281,6 +385,44 @@ class _HeroStat extends StatelessWidget {
                 color: AppColors.white,
                 fontWeight: FontWeight.w700,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderPill extends StatelessWidget {
+  const _HeaderPill({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: AppColors.white.withValues(alpha: 0.14),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppColors.yellowAccent),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.white,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -325,10 +467,10 @@ class _QuickOrderLead extends StatelessWidget {
         Text(
           'Fresh roast, rich drippings, and warm rice delivered fast.',
           style: Theme.of(
-            context,
+          context,
           ).textTheme.bodyMedium?.copyWith(color: const Color(0xFFF9E8DC)),
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 18),
         PrimaryButton(
           label: 'Order Now',
           expanded: false,

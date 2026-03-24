@@ -88,6 +88,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 height: 42,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.only(right: 20),
                   itemCount: categories.length,
                   separatorBuilder: (_, _) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
@@ -102,62 +103,94 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               ),
               const SizedBox(height: 22),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      '${filteredItems.length} items available',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.brownAccent,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.peachSurface.withValues(alpha: 0.95),
                   ),
-                  PopupMenuButton<_MenuSortOption>(
-                    initialValue: _sortOption,
-                    onSelected: (value) => setState(() => _sortOption = value),
-                    itemBuilder: (context) => _MenuSortOption.values
-                        .map(
-                          (option) => PopupMenuItem<_MenuSortOption>(
-                            value: option,
-                            child: Text(option.label),
-                          ),
-                        )
-                        .toList(),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: AppColors.peachSurface.withValues(alpha: 0.95),
-                        ),
-                      ),
-                      child: Row(
+                  boxShadow: AppTheme.softShadow,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.swap_vert_rounded,
-                            size: 16,
-                            color: AppColors.primaryOrange,
-                          ),
-                          const SizedBox(width: 6),
                           Text(
-                            _sortOption.shortLabel,
+                            '${filteredItems.length} items available',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: AppColors.brownAccent),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Sorted by ${_sortOption.label.toLowerCase()}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
-                                  color: AppColors.darkText,
-                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.mutedText,
+                                  fontWeight: FontWeight.w600,
                                 ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    PopupMenuButton<_MenuSortOption>(
+                      initialValue: _sortOption,
+                      onSelected: (value) => setState(() => _sortOption = value),
+                      itemBuilder: (context) => _MenuSortOption.values
+                          .map(
+                            (option) => PopupMenuItem<_MenuSortOption>(
+                              value: option,
+                              child: Text(option.label),
+                            ),
+                          )
+                          .toList(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardSurface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: AppColors.peachSurface.withValues(
+                              alpha: 0.95,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.swap_vert_rounded,
+                              size: 16,
+                              color: AppColors.primaryOrange,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _sortOption.shortLabel,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.darkText,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
               Expanded(
@@ -173,15 +206,17 @@ class _MenuScreenState extends State<MenuScreen> {
                     : LayoutBuilder(
                         builder: (context, constraints) {
                           const spacing = 12.0;
-                          final cardWidth = (constraints.maxWidth - spacing) / 2;
+                          final cardWidth =
+                              (constraints.maxWidth - spacing) / 2;
                           final mainAxisExtent = cardWidth +
-                              (constraints.maxWidth < 380 ? 118 : 128);
+                              (constraints.maxWidth < 380 ? 128 : 136);
 
                           return GridView.builder(
+                            padding: const EdgeInsets.only(bottom: 12),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              mainAxisSpacing: 14,
+                              mainAxisSpacing: 16,
                               crossAxisSpacing: spacing,
                               mainAxisExtent: mainAxisExtent,
                             ),

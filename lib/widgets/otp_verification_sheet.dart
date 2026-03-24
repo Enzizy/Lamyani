@@ -97,6 +97,22 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
               ),
             ),
             const SizedBox(height: 22),
+            Center(
+              child: Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: AppColors.peachSurface,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: const Icon(
+                  Icons.mark_email_read_rounded,
+                  size: 36,
+                  color: AppColors.primaryOrange,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
             Text(
               'Verify your email',
               style: Theme.of(context).textTheme.headlineMedium,
@@ -109,6 +125,24 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
               ),
             ),
             const SizedBox(height: 20),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _OtpMetaPill(
+                  icon: Icons.schedule_rounded,
+                  label: _timeLeft == Duration.zero
+                      ? 'Code expired'
+                      : 'Valid for $minutes:$seconds',
+                ),
+                _OtpMetaPill(
+                  icon: Icons.shield_outlined,
+                  label:
+                      '${_maxFailedAttempts - _failedAttempts} attempts left',
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _otpController,
               keyboardType: TextInputType.number,
@@ -136,17 +170,12 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
             const SizedBox(height: 14),
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                Expanded(
                   child: Text(
-                    _timeLeft == Duration.zero ? 'OTP expired' : 'Valid for $minutes:$seconds',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.darkText,
-                      fontWeight: FontWeight.w700,
+                    'Paste the 6-digit code exactly as it appears in your email.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.mutedText,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -261,5 +290,40 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
     }
 
     return '${local[0]}${'*' * (local.length - 2)}${local[local.length - 1]}@$domain';
+  }
+}
+
+class _OtpMetaPill extends StatelessWidget {
+  const _OtpMetaPill({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppColors.primaryOrange),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.darkText,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

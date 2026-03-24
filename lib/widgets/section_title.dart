@@ -25,7 +25,7 @@ class SectionTitle extends StatelessWidget {
       children: [
         Container(
           width: 4,
-          height: subtitle != null ? 42 : 24,
+          height: subtitle != null ? 38 : 22,
           margin: const EdgeInsets.only(top: 2, right: 12),
           decoration: BoxDecoration(
             color: AppColors.primaryOrange,
@@ -36,22 +36,45 @@ class SectionTitle extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: textTheme.titleLarge),
+              Text(
+                title,
+                style: textTheme.titleLarge?.copyWith(height: 1.05),
+              ),
               if (subtitle != null) ...[
-                const SizedBox(height: 6),
-                Text(subtitle!, style: textTheme.bodyMedium),
+                const SizedBox(height: 5),
+                Text(
+                  subtitle!,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: AppColors.mutedText,
+                    height: 1.35,
+                  ),
+                ),
               ],
             ],
           ),
         ),
         if (actionLabel != null)
-          TextButton(
-            onPressed: onActionTap,
-            child: Text(
-              actionLabel!,
-              style: const TextStyle(
-                color: AppColors.primaryOrange,
-                fontWeight: FontWeight.w700,
+          Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: Material(
+              color: AppColors.cardSurface,
+              borderRadius: BorderRadius.circular(999),
+              child: InkWell(
+                onTap: onActionTap,
+                borderRadius: BorderRadius.circular(999),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  child: Text(
+                    actionLabel!,
+                    style: const TextStyle(
+                      color: AppColors.primaryOrange,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

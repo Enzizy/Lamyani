@@ -122,6 +122,15 @@ class AppTheme {
   }
 
   static List<BoxShadow> get softShadow => const [
-    BoxShadow(color: AppColors.shadow, blurRadius: 24, offset: Offset(0, 12)),
+    BoxShadow(
+      color: Color(0x121C0D05),
+      blurRadius: 14,
+      offset: Offset(0, 4),
+    ),
+    BoxShadow(
+      color: Color(0x0D1C0D05),
+      blurRadius: 24,
+      offset: Offset(0, 10),
+    ),
   ];
 }
